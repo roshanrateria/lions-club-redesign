@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiFetch } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,7 +109,7 @@ export default function Admin() {
 
   // Enhanced fetch function with auth error handling
   const authenticatedFetch = async (url: string, options: RequestInit = {}) => {
-    const response = await fetch(url, {
+    const response = await apiFetch(url, {
       ...options,
       credentials: 'include'
     });
@@ -125,7 +125,7 @@ export default function Admin() {
   useQuery({
     queryKey: ["/api/admin/status"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/status", {
+      const response = await apiFetch("/api/admin/status", {
         credentials: 'include' // Include session cookie
       });
       if (response.ok) {
@@ -170,7 +170,7 @@ export default function Admin() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: { username: string; password: string }) => {
-      const response = await fetch("/api/admin/login", {
+      const response = await apiFetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -201,7 +201,7 @@ export default function Admin() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/admin/logout", {
+      const response = await apiFetch("/api/admin/logout", {
         method: "POST",
         credentials: 'include'
       });
@@ -248,7 +248,7 @@ export default function Admin() {
 
   const createPostMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await fetch("/api/posts", {
+      const response = await apiFetch("/api/posts", {
         method: "POST",
         body: data,
         credentials: 'include', // Add credentials
@@ -277,7 +277,7 @@ export default function Admin() {
 
   const updatePostMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
-      const response = await fetch(`/api/posts/${id}`, {
+      const response = await apiFetch(`/api/posts/${id}`, {
         method: "PUT",
         body: data,
         credentials: 'include', // Add credentials
@@ -307,7 +307,7 @@ export default function Admin() {
 
   const deletePostMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/posts/${id}`, {
+      const response = await apiFetch(`/api/posts/${id}`, {
         method: "DELETE",
         credentials: 'include', // Add credentials
       });
@@ -333,7 +333,7 @@ export default function Admin() {
 
   const updateDonationStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      const response = await fetch(`/api/donations/${id}/status`, {
+      const response = await apiFetch(`/api/donations/${id}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
@@ -361,7 +361,7 @@ export default function Admin() {
 
   const createSocialMediaMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await fetch("/api/social-media-publications", {
+      const response = await apiFetch("/api/social-media-publications", {
         method: "POST",
         body: data,
         credentials: 'include',
@@ -390,7 +390,7 @@ export default function Admin() {
 
   const updateSocialMediaMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: FormData }) => {
-      const response = await fetch(`/api/social-media-publications/${id}`, {
+      const response = await apiFetch(`/api/social-media-publications/${id}`, {
         method: "PUT",
         body: data,
         credentials: 'include',
@@ -420,7 +420,7 @@ export default function Admin() {
 
   const deleteSocialMediaMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/social-media-publications/${id}`, {
+      const response = await apiFetch(`/api/social-media-publications/${id}`, {
         method: "DELETE",
         credentials: 'include',
       });
@@ -446,7 +446,7 @@ export default function Admin() {
 
   const changePasswordMutation = useMutation({
     mutationFn: async (data: z.infer<typeof changePasswordSchema>) => {
-      const response = await fetch("/api/admin/change-password", {
+      const response = await apiFetch("/api/admin/change-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -512,7 +512,7 @@ export default function Admin() {
       const url = editingPost ? `/api/posts/${editingPost.id}` : "/api/posts";
       const method = editingPost ? "PUT" : "POST";
 
-      const response = await fetch(url, {
+      const response = await apiFetch(url, {
         method,
         body: formData,
         credentials: 'include', // Add credentials

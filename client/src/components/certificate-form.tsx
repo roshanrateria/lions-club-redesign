@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { insertDonationSchema } from "@shared/schema";
 import { Info, Send } from "lucide-react";
 import { z } from "zod";
+import { apiFetch } from "@/lib/queryClient";
 
 interface CertificateFormProps {
   isOpen: boolean;
@@ -36,15 +37,15 @@ export default function CertificateForm({ isOpen, onClose }: CertificateFormProp
 
   const submitMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await fetch("/api/donations", {
+      const response = await apiFetch("/api/donations", {
         method: "POST",
         body: data,
       });
-      
+
       if (!response.ok) {
         throw new Error("Failed to submit form");
       }
-      
+
       return response.json();
     },
     onSuccess: () => {
@@ -70,7 +71,7 @@ export default function CertificateForm({ isOpen, onClose }: CertificateFormProp
     formData.append("mobile", data.mobile);
     formData.append("email", data.email);
     formData.append("amount", data.amount.toString());
-    
+
     if (data.proof?.[0]) {
       formData.append("proof", data.proof[0]);
     }
@@ -139,9 +140,9 @@ export default function CertificateForm({ isOpen, onClose }: CertificateFormProp
                 <FormItem>
                   <FormLabel>Donation Amount *</FormLabel>
                   <FormControl>
-                    <Input 
-                      {...field} 
-                      type="number" 
+                    <Input
+                      {...field}
+                      type="number"
                       onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                     />
                   </FormControl>
@@ -154,8 +155,8 @@ export default function CertificateForm({ isOpen, onClose }: CertificateFormProp
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Proof of Payment *
               </label>
-              <Input 
-                type="file" 
+              <Input
+                type="file"
                 accept="image/*,.pdf"
                 {...(form.register as any)('proof')}
               />
@@ -174,16 +175,16 @@ export default function CertificateForm({ isOpen, onClose }: CertificateFormProp
             </div>
 
             <div className="flex gap-4 pt-6">
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={onClose}
                 className="flex-1"
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="flex-1 bg-lions-gold hover:bg-lions-gold/90 text-white"
                 disabled={submitMutation.isPending}
               >

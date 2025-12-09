@@ -7,16 +7,25 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+export async function apiFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const apiBase = import.meta.env.VITE_API_URL || "";
+  const finalUrl = url.startsWith("/") ? `${apiBase}${url}` : url;
+
+  return fetch(finalUrl, {
+    ...options,
+    credentials: "include",
+  });
+}
+
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  const res = await apiFetch(url, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
   });
 
   await throwIfResNotOk(res);
@@ -28,18 +37,22 @@ export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
-      credentials: "include",
-    });
+    async ({ queryKey }) => {
+      const apiBase = import.meta.env.VITE_API_URL || "";
+      const url = queryKey.join("/");
+      const finalUrl = url.startsWith("/") ? `${apiBase}${url}` : url;
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
-    }
+      const res = await fetch(finalUrl as string, {
+        credentials: "include",
+      });
 
-    await throwIfResNotOk(res);
-    return await res.json();
-  };
+      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+        return null;
+      }
+
+      await throwIfResNotOk(res);
+      return await res.json();
+    };
 
 export const queryClient = new QueryClient({
   defaultOptions: {
