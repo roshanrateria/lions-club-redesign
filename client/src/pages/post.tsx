@@ -178,7 +178,7 @@ export default function PostPage() {
                   <Button
                     variant="outline"
                     onClick={() => setLocation("/#campaigns")}
-                    className="border-white/20 text-white hover:bg-white/10 px-8 py-6 rounded-xl text-lg"
+                    className="bg-transparent border-white/20 text-white hover:bg-white/10 px-8 py-6 rounded-xl text-lg"
                   >
                     View More Campaigns
                     <ArrowRight className="ml-2 w-5 h-5" />
